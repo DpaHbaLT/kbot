@@ -1,0 +1,44 @@
+name : KBOT-CICD
+
+
+
+on: push[develop]
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+
+
+  steps: 
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Run test
+      run: make test
+
+  steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Configure Docker
+        run: |
+          echo ${GCP_KEY_FILE} > /tmp/gcp_key.json
+          gcloud auth activate-service-account --key-file=/tmp/gcp_key.json
+          gcloud auth configure-docker
+
+      - name: Build Docker image
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/my_kbot:${{ github.sha }} .
+
+      - name: Push Docker image to Artifact Registry
+        run: |
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/my_kbot:${{ github.sha }}
+      
