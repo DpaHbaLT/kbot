@@ -1,27 +1,41 @@
-jobs:
-  job_id:
-    permissions:
-      contents: 'read'
-      id-token: 'write'
+name: Build and Push to Artifact Registry
 
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  PROJECT_ID: fake-app-323017
+  REGION: northamerica-northeast1
+  GAR_LOCATION: northamerica-northeast1-docker.pkg.dev/fake-app-323017/repo-1/
+
+job:
+  build-push-artifact:
+    runs-on: ubuntu-latest
     steps:
-    - id: 'checkout'
-      uses: 'actions/checkout@v4'
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
 
-    - id: 'auth'
-      uses: 'google-github-actions/auth@v2'
-      with:
-        workload_identity_provider: 'principal://iam.googleapis.com/projects/108971942159/locations/global/workloadIdentityPools/github/subject/SUBJECT_ATTRIBUTE_VALUE'
-        service_account: 'admin-146@uptime-422014.iam.gserviceaccount.com'
+      - id: "auth"
+          uses: "google-github-actions/auth@v1"
+          with:
+            credentials_json: "${{ secrets.SERVICE_ACCOUNT_KEY }}"
 
-    - id: 'upload-file'
-      uses: 'google-github-actions/upload-cloud-storage@v2'
-      with:
-        path: '/path/to/file'
-        destination: 'bucket-name'
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v1"
 
-    # Example of using the output
-    - id: 'uploaded-files'
-      uses: 'foo/bar@v1'
-      env:
-        file: '${{ steps.upload-file.outputs.uploaded }}'
+      - name: "Use gcloud CLI"
+        run: "gcloud info"
+
+      - name: "Docker auth"
+        run: |-
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build image
+        run: docker build . --file DOCKERFILE_LOCATION --tag ${{ env.GAR_LOCATION }}
+        working-directory: WORKING_DIRECTORY
+
+      - name: Push image
+        run: docker push ${{ env.GAR_LOCATION }}
