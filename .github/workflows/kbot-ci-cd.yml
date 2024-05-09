@@ -36,6 +36,5 @@ jobs:
       - name: Build image
         run: docker build . --tag ${{ env.GAR_LOCATION }}
   
-
       - name: Push image
         run: docker push ${{ env.GAR_LOCATION }}
