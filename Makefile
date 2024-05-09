@@ -24,6 +24,9 @@ image:
 
 push:
 	docker push ${REGESTRY}/${APP}:${VERSION}-${TARGETARCH}
+helm:
+	helm package kbot
+
 
 clean: 
 	rm -rf kbot
