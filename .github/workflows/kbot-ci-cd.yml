@@ -31,10 +31,10 @@ jobs:
 
       - name: "Docker auth"
         run: |-
-          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+          gcloud auth configure-docker ${{ env.GAR_LOCATION}}-docker.pkg.dev --quiet
 
       - name: Build image
-        run: docker build . --tag ${{ env.REGION }}
+        run: docker build . --tag ${{ env.GAR_LOCATION }}
   
       - name: Push image
-        run: docker push ${{ env.REGION }}
+        run: docker push ${{ env.GAR_LOCATION }}
