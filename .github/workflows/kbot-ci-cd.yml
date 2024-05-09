@@ -9,7 +9,7 @@ on:
 env:
   PROJECT_ID: uptime-422014
   REGION: europe-west1
-  GAR_LOCATION: europe-west1-docker.pkg.dev/uptime-422014/andrii
+  GAR_LOCATION: europe-west1-docker.pkg.dev/uptime-422014/andrii/kbot
   
 jobs:
   build-push-artifact:
