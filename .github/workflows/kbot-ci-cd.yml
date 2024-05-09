@@ -1,10 +1,10 @@
-name: Build and Push to Artifact Registry
+#name: Build and Push to Artifact Registry
 
-on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+#on:
+  #push:
+    #branches: ["main"]
+  #pull_request:
+    #branches: ["main"]
 
 env:
   PROJECT_ID: uptime-422014
